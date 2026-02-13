@@ -13,9 +13,9 @@ const loginSessions = {};
 const otpStore = {};
 
 // Middleware
+app.use(cookieParser());
 app.use(requestLogger);
 app.use(express.json());
-
 
 app.get("/", (req, res) => {
   res.json({
@@ -50,6 +50,7 @@ app.post("/auth/login", (req, res) => {
     otpStore[loginSessionId] = otp;
 
     console.log(`[OTP] Session ${loginSessionId} generated`);
+    console.log(`OTP ${otp} generated`);
 
     return res.status(200).json({
       message: "OTP sent",
@@ -68,9 +69,7 @@ app.post("/auth/verify-otp", (req, res) => {
     const { loginSessionId, otp } = req.body;
 
     if (!loginSessionId || !otp) {
-      return res
-        .status(400)
-        .json({ error: "loginSessionId and otp required" });
+      return res.status(400).json({ error: "loginSessionId and otp required" });
     }
 
     const session = loginSessions[loginSessionId];
@@ -109,7 +108,9 @@ app.post("/auth/verify-otp", (req, res) => {
 
 app.post("/auth/token", (req, res) => {
   try {
-    const token = req.headers.authorization;
+    const token = req.cookies.session_token;
+
+    console.log("token", token);
 
     if (!token) {
       return res
@@ -117,7 +118,7 @@ app.post("/auth/token", (req, res) => {
         .json({ error: "Unauthorized - valid session required" });
     }
 
-    const session = loginSessions[token.replace("Bearer ", "")];
+    const session = loginSessions[token];
 
     if (!session) {
       return res.status(401).json({ error: "Invalid session" });
@@ -134,7 +135,7 @@ app.post("/auth/token", (req, res) => {
       secret,
       {
         expiresIn: "15m",
-      }
+      },
     );
 
     return res.status(200).json({
@@ -154,7 +155,7 @@ app.get("/protected", authMiddleware, (req, res) => {
   return res.json({
     message: "Access granted",
     user: req.user,
-    success_flag: `FLAG-${Buffer.from(req.user.email + "_COMPLETED_ASSIGNMENT").toString('base64')}`,
+    success_flag: `FLAG-${Buffer.from(req.user.email + "_COMPLETED_ASSIGNMENT").toString("base64")}`,
   });
 });
 
