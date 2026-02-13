@@ -1,0 +1,79 @@
+TEST COMMAND 1 -- /auth/login:
+
+CONSOLE/TERMINAL OUTPUT:
+
+[OTP] Session 8amjnd generated
+OTP 113633 generated
+
+
+RESPONSE ON POSTMAN:
+
+{
+    "message": "OTP sent",
+    "loginSessionId": "od00p6"
+}
+
+
+-------------------------------------
+
+
+TEST COMMAND 2 -- /auth/verify-otp:
+
+console/terminal output:
+
+POST /auth/verify-otp
+POST /auth/verify-otp -> 200 (2ms)
+
+
+RESPONSE ON POSTMAN:
+
+{
+    "message": "OTP verified",
+    "sessionId": "8amjnd"
+}
+
+
+-------------------------------------
+
+
+TEST COMMAND 3 -- /auth/token:
+
+CONSOLE/TERMINAL OUTPUT:
+
+POST /auth/token
+token 8amjnd
+POST /auth/token -> 200 (4ms)
+
+
+RESPONSE ON POSTMAN:
+
+{
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJhbmRlZXByYWpwYWw5QGdtYWlsLmNvbSIsInNlc3Npb25JZCI6IjhhbWpuZCIsImlhdCI6MTc3MDk1NzkyNSwiZXhwIjoxNzcwOTU4ODI1fQ.d03YMi3nLypBVYtuGfyQj_XGJlCvrs3tULtR73vc-QY",
+    "expires_in": 900
+}
+
+
+-------------------------------------
+
+
+TEST COMMAND 4 -- /protected:
+
+CONSOLE/TERMINAL OUTPUT:
+
+GET /protected
+GET /protected -> 200 (2ms)
+
+
+RESPONSE ON POSTMAN:
+
+{
+    "message": "Access granted",
+    "user": {
+        "email": "randeeprajpal9@gmail.com",
+        "sessionId": "8amjnd",
+        "iat": 1770957925,
+        "exp": 1770958825
+    },
+    "success_flag": "FLAG-cmFuZGVlcHJhanBhbDlAZ21haWwuY29tX0NPTVBMRVRFRF9BU1NJR05NRU5U"
+}
+
